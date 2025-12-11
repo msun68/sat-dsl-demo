@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm")
     application
@@ -13,15 +15,30 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
+}
+
+tasks.withType<JavaCompile> {
+    options.release.set(21)
+    options.compilerArgs.addAll(listOf("--enable-preview"))
+}
+
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
 }
 
 tasks.withType<JavaExec> {
+    jvmArgs("--enable-preview")
+}
+
+tasks.withType<Test> {
     jvmArgs("--enable-preview")
 }
 

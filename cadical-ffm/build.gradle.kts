@@ -8,14 +8,20 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
+// FFM API is preview in Java 21, finalized in Java 22+
 tasks.withType<JavaCompile> {
-    options.compilerArgs.add("--enable-preview")
+    options.release.set(21)
+    options.compilerArgs.addAll(listOf("--enable-preview"))
 }
 
 tasks.withType<Test> {
+    jvmArgs("--enable-preview")
+}
+
+tasks.withType<JavaExec> {
     jvmArgs("--enable-preview")
 }

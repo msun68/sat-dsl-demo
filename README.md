@@ -95,8 +95,10 @@ Features:
 
 ## Prerequisites
 
-1. **Java 25** - The project requires Java 25 for the FFM API
+1. **Java 21 or later** - The project requires Java 21+ (with Java 22+ recommended for finalized FFM API)
    - Download from [Oracle](https://www.oracle.com/java/technologies/downloads/) or use [SDKMAN](https://sdkman.io/)
+   - Java 21 uses FFM as a preview feature (requires --enable-preview)
+   - Java 22+ has FFM as a finalized feature
 
 2. **CaDiCaL 2.2.0** - The SAT solver library must be installed
    
@@ -252,9 +254,10 @@ The DSL currently supports basic boolean constraints with `or` and `not` operato
 
 ### Java Version Strategy
 
-- **Java 21**: Required by Xtext 2.41, used for DSL processing
-- **Java 25**: Required for finalized FFM API, used for native CaDiCaL integration
-- **Runtime**: Java 25 JVM executes all bytecode (both Java 21 and 25)
+- **Java 21**: All modules compile to Java 21 bytecode for compatibility
+- **FFM API**: Available as preview in Java 21, finalized in Java 22+
+- **Preview Features**: cadical-ffm and cli modules use --enable-preview flag
+- **Runtime**: Java 21+ JVM can execute all modules
 
 ### FFM API Usage
 
