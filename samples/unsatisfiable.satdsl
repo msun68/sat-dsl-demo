@@ -1,0 +1,10 @@
+problem UnsatisfiableProblem {
+  variables: a, b
+  
+  constraints {
+    a or b
+    not a or b
+    a or not b
+    not a or not b
+  }
+}
