@@ -46,6 +46,7 @@ The solution uses **dependency injection**: the CLI module creates the CaDiCaL s
 Defines the interface contract for SAT solvers:
 - `SatSolver` interface with methods for adding clauses, solving, and retrieving models
 - `SatResult` enum: `SATISFIABLE`, `UNSATISFIABLE`, `UNKNOWN`
+- `MockSolver`: A brute-force implementation for testing without CaDiCaL
 
 ### 2. cadical-ffm (Java 25)
 
@@ -63,12 +64,13 @@ Provides DSL parsing and constraint solving:
 - Uses injected `SatSolver` to solve problems
 - Generates human-readable output
 
-### 4. cli (Kotlin, Java 25)
+### 4. cli (Kotlin, Java 21)
 
 Command-line interface:
 - Uses kotlinx-cli for argument parsing
 - Reads and parses DSL files
-- Wires together the DSL generator and CaDiCaL solver
+- Wires together the DSL generator and solver (CaDiCaL or mock)
+- Automatic fallback to mock solver if CaDiCaL is unavailable
 - Handles file I/O and error reporting
 
 ## DSL Syntax
@@ -100,7 +102,7 @@ Features:
    - Java 21 uses FFM as a preview feature (requires --enable-preview)
    - Java 22+ has FFM as a finalized feature
 
-2. **CaDiCaL 2.2.0** - The SAT solver library must be installed
+2. **CaDiCaL 2.2.0** - The SAT solver library (optional for testing with --mock flag)
    
    ### Installing CaDiCaL
    
@@ -141,7 +143,11 @@ Features:
 ### Using Gradle
 
 ```bash
+# With CaDiCaL (if installed)
 ./gradlew :cli:run --args="--file samples/simple.satdsl"
+
+# With mock solver (always works, no CaDiCaL needed)
+./gradlew :cli:run --args="--file samples/simple.satdsl --mock"
 ```
 
 ### Using the JAR
@@ -150,16 +156,25 @@ Features:
 # Build distribution
 ./gradlew :cli:installDist
 
-# Run
+# Run with CaDiCaL
 ./cli/build/install/cli/bin/cli --file samples/simple.satdsl
+
+# Run with mock solver
+./cli/build/install/cli/bin/cli --file samples/simple.satdsl --mock
 ```
 
 ### Command-line Options
 
 ```bash
-sat-dsl-demo --file <path-to-dsl-file>
-sat-dsl-demo -f <path-to-dsl-file>
+sat-dsl-demo --file <path-to-dsl-file> [--mock]
+sat-dsl-demo -f <path-to-dsl-file> [-m]
+
+Options:
+  -f, --file <path>    Path to the DSL file to parse and solve (required)
+  -m, --mock           Use mock solver instead of CaDiCaL (optional)
 ```
+
+**Note:** If CaDiCaL is not installed, the application will automatically fall back to the mock solver.
 
 ## Examples
 
@@ -221,6 +236,23 @@ Result:
 -------
 UNSATISFIABLE: No solution exists for UnsatisfiableProblem
 ```
+
+## Testing
+
+The project includes a mock SAT solver that can be used for testing without installing CaDiCaL:
+
+```bash
+# Test with mock solver
+./gradlew :cli:run --args="--file samples/simple.satdsl --mock"
+```
+
+The mock solver uses a brute-force approach and is limited to problems with ≤20 variables. It's suitable for:
+- Testing the DSL parser and generator
+- Verifying the architecture
+- Learning how the system works
+- Small constraint problems
+
+For production use or larger problems, install and use CaDiCaL.
 
 ## Development
 

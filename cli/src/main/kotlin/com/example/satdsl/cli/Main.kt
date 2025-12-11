@@ -1,11 +1,13 @@
 package com.example.satdsl.cli
 
 import com.example.satdsl.api.SatSolver
+import com.example.satdsl.api.mock.MockSolver
 import com.example.satdsl.cadical.CaDiCaLSolver
 import com.example.satdsl.dsl.SatDslGenerator
 import com.example.satdsl.dsl.SatDslParser
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
+import kotlinx.cli.default
 import kotlinx.cli.required
 import java.io.File
 import kotlin.system.exitProcess
@@ -20,13 +22,20 @@ fun main(args: Array<String>) {
         description = "Path to the DSL file to parse and solve"
     ).required()
     
+    val useMock by parser.option(
+        ArgType.Boolean,
+        shortName = "m",
+        fullName = "mock",
+        description = "Use mock solver instead of CaDiCaL"
+    ).default(false)
+    
     try {
         parser.parse(args)
     } catch (e: Exception) {
         println("Error: ${e.message}")
         println()
-        println("Usage: sat-dsl-demo --file <path-to-dsl-file>")
-        println("       sat-dsl-demo -f <path-to-dsl-file>")
+        println("Usage: sat-dsl-demo --file <path-to-dsl-file> [--mock]")
+        println("       sat-dsl-demo -f <path-to-dsl-file> [-m]")
         exitProcess(1)
     }
     
@@ -55,12 +64,23 @@ fun main(args: Array<String>) {
         }
         println()
         
-        // Create the CaDiCaL solver (Java 25 FFM)
-        println("Initializing CaDiCaL solver...")
-        val solver: SatSolver = CaDiCaLSolver()
+        // Create the solver
+        val solver: SatSolver = if (useMock) {
+            println("Using mock solver (brute-force, for testing only)...")
+            MockSolver()
+        } else {
+            try {
+                println("Initializing CaDiCaL solver...")
+                CaDiCaLSolver()
+            } catch (e: Exception) {
+                println("Warning: Could not load CaDiCaL library: ${e.message}")
+                println("Falling back to mock solver...")
+                MockSolver()
+            }
+        }
         
         solver.use {
-            // Create the generator and solve (Java 21 DSL generator using injected solver)
+            // Create the generator and solve
             println("Solving...")
             val generator = SatDslGenerator(solver)
             val solution = generator.solve(problem)
