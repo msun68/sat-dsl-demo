@@ -1,0 +1,13 @@
+problem ComplexProblem {
+  variables: p, q, r, s, t
+  
+  constraints {
+    p or q or r
+    not p or q
+    not q or r
+    not r or s
+    not s or t
+    not t or p
+    p or not s
+  }
+}

@@ -1,0 +1,9 @@
+problem SimpleProblem {
+  variables: x, y, z
+  
+  constraints {
+    x or y
+    not x or z
+    y or not z
+  }
+}
