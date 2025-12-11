@@ -4,7 +4,41 @@ A multi-module Gradle project demonstrating integration of Xtext DSL with CaDiCa
 
 ## Overview
 
-This project showcases a complete architecture for integrating a Domain-Specific Language (DSL) built with Xtext 2.41 with the CaDiCaL 2.2.0 SAT solver. It demonstrates how to handle the Java version compatibility challenge: Xtext 2.41 requires Java 21, while the FFM API for native integration is available in Java 25.
+This project showcases a complete architecture for integrating a Domain-Specific Language (DSL) built with Xtext with the CaDiCaL 2.2.0 SAT solver using Java's Foreign Function & Memory API. It demonstrates clean separation of concerns through a multi-module Gradle project and includes a mock solver for testing without external dependencies.
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/msun68/sat-dsl-demo.git
+cd sat-dsl-demo
+
+# Build the project
+./gradlew build
+
+# Run with mock solver (no CaDiCaL installation needed)
+./gradlew :cli:run --args="--file samples/simple.satdsl --mock"
+```
+
+Expected output:
+```
+Problem: SimpleProblem
+Variables: x, y, z
+Constraints (3):
+  x or y
+  not x or z
+  y or not z
+
+Using mock solver (brute-force, for testing only)...
+Solving...
+
+Result:
+-------
+SATISFIABLE: Solution for SimpleProblem:
+  x = false
+  y = true
+  z = false
+```
 
 ## Architecture
 
@@ -175,6 +209,17 @@ Options:
 ```
 
 **Note:** If CaDiCaL is not installed, the application will automatically fall back to the mock solver.
+
+## Key Features
+
+- ✅ **Multi-module Gradle project** with proper dependency management
+- ✅ **Java 21 compatibility** across all modules with FFM preview features
+- ✅ **Foreign Function & Memory API** bindings to native CaDiCaL library
+- ✅ **DSL parser** for constraint satisfaction problems
+- ✅ **Mock solver** for testing without external dependencies
+- ✅ **Automatic fallback** when CaDiCaL is not available
+- ✅ **Command-line interface** built with Kotlin and kotlinx-cli
+- ✅ **Comprehensive documentation** and sample files
 
 ## Examples
 

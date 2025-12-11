@@ -1,0 +1,13 @@
+problem GraphColoring {
+  variables: r1, b1, r2, b2, r3, b3
+  
+  constraints {
+    r1 or b1
+    r2 or b2
+    r3 or b3
+    not r1 or not r2
+    not b1 or not b2
+    not r2 or not r3
+    not b2 or not b3
+  }
+}
