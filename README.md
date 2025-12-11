@@ -1,6 +1,6 @@
 # SAT DSL Demo
 
-A multi-module Gradle project demonstrating integration of Xtext DSL with CaDiCaL SAT solver using Java 25's Foreign Function & Memory (FFM) API.
+A multi-module Gradle project demonstrating integration of Xtext DSL with CaDiCaL SAT solver using Java's Foreign Function & Memory (FFM) API.
 
 ## Overview
 
@@ -46,7 +46,7 @@ The project consists of 4 modules that work together:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  cli (Kotlin, Java 25)                                  │
+│  cli (Kotlin, Java 21)                                  │
 │  - Entry point                                          │
 │  - Calls DSL Generator                                  │
 │  - Injects CaDiCaL Solver implementation                │
@@ -54,7 +54,7 @@ The project consists of 4 modules that work together:
                   │                       │
                   ▼                       ▼
 ┌─────────────────────────────┐ ┌─────────────────────────┐
-│ dsl-generator (Java 21)     │ │ cadical-ffm (Java 25)   │
+│ dsl-generator (Java 21)     │ │ cadical-ffm (Java 21)   │
 │ - Xtext-based DSL           │ │ - Foreign Function API  │
 │ - Code generation           │ │ - Memory API            │
 │ - Uses SatSolver interface  │ │ - CaDiCaL 2.2.0 bindings│
@@ -71,7 +71,7 @@ The project consists of 4 modules that work together:
 
 ### Key Architectural Pattern
 
-The solution uses **dependency injection**: the CLI module creates the CaDiCaL solver (Java 25) and injects it into the DSL generator (Java 21) via the common interface. At runtime, everything runs on a Java 25 JVM which can execute both Java 21 and Java 25 bytecode.
+The solution uses **dependency injection**: the CLI module creates a solver instance (CaDiCaL or mock) and injects it into the DSL generator via the common SatSolver interface. All modules compile to Java 21 bytecode and run on a Java 21+ JVM.
 
 ## Modules
 
@@ -82,9 +82,9 @@ Defines the interface contract for SAT solvers:
 - `SatResult` enum: `SATISFIABLE`, `UNSATISFIABLE`, `UNKNOWN`
 - `MockSolver`: A brute-force implementation for testing without CaDiCaL
 
-### 2. cadical-ffm (Java 25)
+### 2. cadical-ffm (Java 21 with FFM preview)
 
-Implements the `SatSolver` interface using Java 25's Foreign Function & Memory API:
+Implements the `SatSolver` interface using Java's Foreign Function & Memory API:
 - Binds to CaDiCaL 2.2.0 C API functions
 - Uses `Arena` for memory management
 - Uses `Linker` and `SymbolLookup` for native function binding
@@ -307,11 +307,11 @@ For production use or larger problems, install and use CaDiCaL.
 sat-dsl-demo/
 ├── common-api/           # Shared interfaces (Java 21)
 │   └── src/main/java/
-├── cadical-ffm/          # CaDiCaL bindings (Java 25)
+├── cadical-ffm/          # CaDiCaL bindings (Java 21)
 │   └── src/main/java/
 ├── dsl-generator/        # DSL parser and generator (Java 21)
 │   └── src/main/java/
-├── cli/                  # CLI application (Kotlin, Java 25)
+├── cli/                  # CLI application (Kotlin, Java 21)
 │   └── src/main/kotlin/
 ├── samples/              # Sample DSL files
 ├── build.gradle.kts      # Root build configuration
@@ -349,7 +349,7 @@ The `CaDiCaLSolver` class demonstrates:
 - Multi-module project with shared repositories
 - Per-module Java toolchain configuration
 - Kotlin plugin applied only to CLI module
-- Preview features enabled for Java 25 modules
+- Preview features enabled for FFM API in Java 21
 
 ## Troubleshooting
 
@@ -366,10 +366,10 @@ Solutions:
 
 ### Java version mismatch
 
-Ensure you're using Java 25:
+Ensure you're using Java 21 or later:
 ```bash
-java -version  # Should show version 25
-./gradlew --version  # Check Gradle is using Java 25
+java -version  # Should show version 21 or later
+./gradlew --version  # Check Gradle is using Java 21+
 ```
 
 ### Build failures

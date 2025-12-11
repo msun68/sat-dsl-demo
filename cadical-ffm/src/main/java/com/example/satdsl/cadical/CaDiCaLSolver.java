@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of SatSolver using CaDiCaL 2.2.0 via Java 25 FFM API.
+ * Implementation of SatSolver using CaDiCaL 2.2.0 via Java FFM API.
  * 
- * This class binds to the CaDiCaL C library using the Foreign Function & Memory API.
+ * This class binds to the CaDiCaL C library using the Foreign Function & Memory API
+ * (preview feature in Java 21, finalized in Java 22+).
  * The CaDiCaL library must be installed and available in the system library path.
  */
 public class CaDiCaLSolver implements SatSolver {
